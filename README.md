@@ -1,2 +1,4 @@
 # r-practice
-study for R programing
+
+R programming/data analysis course at university.
+
