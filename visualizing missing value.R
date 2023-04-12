@@ -25,7 +25,3 @@ AmesHousing::ames_raw %>%
 install.packages("visdat")  
 library(visdat)  
 vis_miss(AmesHousing::ames_raw,cluster = TRUE)
-
-system("git add visualizing missing value.R")
-system('git commit -m "numerical data/dealing with missingness/
-visualizing missing value"')
