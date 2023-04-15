@@ -57,3 +57,33 @@ lines(tp,logistic(chall_gm_pred$fit))
 lines(tp,logistic(chall_gm_pred$fit-1.96*chall_gm_pred$se.fit),lty=2)
 lines(tp,logistic(chall_gm_pred$fit+1.96*chall_gm_pred$se.fit),lty=2)
 abline(v=30,lty=2,col='blue')
+
+#앞선 분석에서는 화씨를 이용하여 모델리을 진행하였으나 우리가 사용하는 섭씨가 아니라 그결과가 잘 와닿지 않음.섭씨로 바꾸어서 모델링을 진행해보겠음
+
+chall$temperature<-(chall$temperature-32)*5/9
+glimpse(chall)
+
+chall %>% ggplot(aes(temperature,distress_ct))+geom_point()
+chall %>% ggplot(aes(factor(distress_ct),temperature))+geom_boxplot()
+
+chall_glm<-glm(cbind(distress_ct,o_ring_ct-distress_ct)~temperature,
+               data = chall,family = 'binomial')
+chall_glm
+summary(chall_glm)
+
+#(30-32)*5/9=-1.111111
+predict(chall_glm,data.frame(temperature=-1.111111))
+predict(chall_glm,data.frame(temperature=-1.111111),type = 'response')
+
+logistic<-function(x){
+  exp(x)/(exp(x)+1)
+}
+#(20-32)*5/9= -6.66666,(85-32)*5/9=29.44444
+plot(c(-6.666667,29.44444),c(0,1),type = "n",xlab = " Celsius Temperature",ylab = "Prob")
+tp=seq(-6.666667,29.44444,1)
+chall_gm_pred<-predict(chall_glm,data.frame(temperature=tp),
+                       se.fit = TRUE)
+lines(tp,logistic(chall_gm_pred$fit))
+lines(tp,logistic(chall_gm_pred$fit-1.96*chall_gm_pred$se.fit),lty=2)
+lines(tp,logistic(chall_gm_pred$fit+1.95*chall_gm_pred$se.fit),lty=2)
+abline(v=-1.111111,lty=2,col='blue')
