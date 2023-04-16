@@ -44,3 +44,31 @@ freq_by_rank %>%
   geom_line(size=1.1,,alpha=.8,show.legend = FALSE)+
   scale_x_log10()+
   scale_y_log10()
+
+#tf-idf 구하기
+
+book_words<-book_words %>% 
+  bind_tf_idf(word,book,n)
+book_words
+#많은 문서에서 출현하는 단어의 경우 역문서빈도가 매우 낮아짐
+
+#tf_idf가 높은 용어 나타내기
+
+book_words %>% 
+  select(-total) %>% 
+  arrange(desc(tf_idf))
+
+#시각화 하기
+
+book_words %>% arrange(desc(tf_idf)) %>% 
+  mutate(word=factor(word,levels=rev(unique(word))),
+         word = reorder(word, n)) %>% 
+  group_by(book) %>% 
+  top_n(30) %>% 
+  ungroup %>% 
+  ggplot(aes(word,tf_idf,fill=book))+
+  geom_col(show.legend = FALSE)+
+  labs(x=NULL,y="tf-idf")+
+  facet_wrap(~book,ncol = 2,scales = "free")+
+  coord_flip()
+
